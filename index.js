@@ -16,14 +16,13 @@ module.exports = groupBy;
  * Create groupings from an object's keys and values.
  *
  * ```js
- * var groups = {};
  * function grouper (value, key, obj, setter) {
  *   return value.group;
  * }
  *
- * function setter (group, value, key, obj) {
- *   groups[group] = groups[group] || {};
- *   groups[group][key] = value;
+ * function setter (group, value, key, acc) {
+ *   acc[group] = acc[group] || {};
+ *   acc[group][key] = value;
  * }
  *
  * var obj = {
@@ -35,7 +34,7 @@ module.exports = groupBy;
  *   f: { group: 'three', content: 'F'}
  * };
  *
- * groups = groupBy(obj, grouper, setter);
+ * var groups = groupBy(obj, grouper, setter);
  * //=> {
  * //=>   one: {
  * //=>     a: { group: 'one', content: 'A'},
@@ -57,22 +56,29 @@ module.exports = groupBy;
  * @param  {[type]}     setter  [description]
  * @return {[type]}             [description]
  */
-function groupBy (obj, grouper, setter) {
-  var res = {};
+function groupBy (obj, grouper, setter, acc) {
+  if (grouper != null && typeof grouper === 'object') {
+    return groupBy(obj, null, null, grouper);
+  }
+  if (setter != null && typeof setter === 'object') {
+    return groupBy(obj, grouper, null, setter);
+  }
+
+  acc = acc || {};
   if (typeof grouper !== 'function') {
     grouper = function (value) {
       return value;
     };
   }
   if (typeof setter !== 'function') {
-    setter = function (group, value, key) {
+    setter = function (group, value, key, acc) {
       if (typeof value === 'undefined') return;
-      set(res, [group, key].join('.'), value);
+      set(acc, [group, key].join('.'), value);
     };
   }
 
   forIn(obj, function (value, key) {
-    setter(grouper(value, key, obj, setter));
+    setter(grouper(value, key, obj, setter), value, key, acc);
   });
-  return res;
+  return acc;
 }
