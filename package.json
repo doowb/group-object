@@ -21,5 +21,9 @@
   },
   "devDependencies": {
     "mocha": "*"
+  },
+  "dependencies": {
+    "for-in": "^0.1.4",
+    "upsert-value": "^0.1.0"
   }
 }
