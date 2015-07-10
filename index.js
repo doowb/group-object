@@ -75,7 +75,7 @@ function groupBy (obj, grouper, setter, acc) {
   }
   if (typeof setter !== 'function') {
     setter = function (acc, group, value, key, obj) {
-      if (typeof value === 'undefined') return;
+      if (typeof group === 'undefined') return;
       set(acc, [group, key].join('.'), value);
     };
   }

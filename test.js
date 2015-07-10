@@ -30,19 +30,19 @@ describe('group-object', function () {
     }
 
     var obj = {
-      a: { group: 'one', content: 'A'},
-      b: { group: 'one', content: 'B'},
-      c: { group: 'two', content: 'C'},
-      d: { group: 'two', content: 'D'},
-      e: { group: 'three', content: 'E'},
-      f: { group: 'three', content: 'F'}
+      a: {group: 'one', content: 'A'},
+      b: {group: 'one', content: 'B'},
+      c: {group: 'two', content: 'C'},
+      d: {group: 'two', content: 'D'},
+      e: {group: 'three', content: 'E'},
+      f: {group: 'three', content: 'F'}
     };
 
     var groups = groupBy(obj, grouper);
     var expected = {
-      one: { a: { group: 'one', content: 'A' }, b: { group: 'one', content: 'B' } },
-      two: { c: { group: 'two', content: 'C' }, d: { group: 'two', content: 'D' } },
-      three: { e: { group: 'three', content: 'E' }, f: { group: 'three', content: 'F' } }
+      one: {a: {group: 'one', content: 'A'}, b: {group: 'one', content: 'B'}},
+      two: {c: {group: 'two', content: 'C'}, d: {group: 'two', content: 'D'}},
+      three: {e: {group: 'three', content: 'E'}, f: {group: 'three', content: 'F'}}
     };
     assert.deepEqual(groups, expected);
   });
@@ -83,19 +83,19 @@ describe('group-object', function () {
     }
 
     var obj = {
-      a: { group: 'one', content: 'A'},
-      b: { group: 'one', content: 'B'},
-      c: { group: 'two', content: 'C'},
-      d: { group: 'two', content: 'D'},
-      e: { group: 'three', content: 'E'},
-      f: { group: 'three', content: 'F'}
+      a: {group: 'one', content: 'A'},
+      b: {group: 'one', content: 'B'},
+      c: {group: 'two', content: 'C'},
+      d: {group: 'two', content: 'D'},
+      e: {group: 'three', content: 'E'},
+      f: {group: 'three', content: 'F'}
     };
 
     var groups = groupBy(obj, grouper, setter);
     var expected = {
-      one: { a: { group: 'one', content: 'A' }, b: { group: 'one', content: 'B' } },
-      two: { c: { group: 'two', content: 'C' }, d: { group: 'two', content: 'D' } },
-      three: { e: { group: 'three', content: 'E' }, f: { group: 'three', content: 'F' } }
+      one: {a: {group: 'one', content: 'A'}, b: {group: 'one', content: 'B'}},
+      two: {c: {group: 'two', content: 'C'}, d: {group: 'two', content: 'D'}},
+      three: {e: {group: 'three', content: 'E'}, f: {group: 'three', content: 'F'}}
     };
     assert.deepEqual(groups, expected);
   });
@@ -140,22 +140,65 @@ describe('group-object', function () {
     }
 
     var obj = {
-      a: { group: 'one', content: 'A'},
-      b: { group: 'one', content: 'B'},
-      c: { group: 'two', content: 'C'},
-      d: { group: 'two', content: 'D'},
-      e: { group: 'three', content: 'E'},
-      f: { group: 'three', content: 'F'}
+      a: {group: 'one', content: 'A'},
+      b: {group: 'one', content: 'B'},
+      c: {group: 'two', content: 'C'},
+      d: {group: 'two', content: 'D'},
+      e: {group: 'three', content: 'E'},
+      f: {group: 'three', content: 'F'}
     };
 
     var groups = groupBy(obj, grouper, setter);
     var expected = {
-      one: { a: { group: 'one', content: 'A' }, b: { group: 'one', content: 'B' } },
-      '1': { a: { group: 'one', content: 'A' }, b: { group: 'one', content: 'B' } },
-      two: { c: { group: 'two', content: 'C' }, d: { group: 'two', content: 'D' } },
-      '2': { c: { group: 'two', content: 'C' }, d: { group: 'two', content: 'D' } },
-      three: { e: { group: 'three', content: 'E' }, f: { group: 'three', content: 'F' } },
-      '3': { e: { group: 'three', content: 'E' }, f: { group: 'three', content: 'F' } }
+      one: {a: {group: 'one', content: 'A'}, b: {group: 'one', content: 'B'}},
+      '1': {a: {group: 'one', content: 'A'}, b: {group: 'one', content: 'B'}},
+      two: {c: {group: 'two', content: 'C'}, d: {group: 'two', content: 'D'}},
+      '2': {c: {group: 'two', content: 'C'}, d: {group: 'two', content: 'D'}},
+      three: {e: {group: 'three', content: 'E'}, f: {group: 'three', content: 'F'}},
+      '3': {e: {group: 'three', content: 'E'}, f: {group: 'three', content: 'F'}}
+    };
+    assert.deepEqual(groups, expected);
+  });
+
+  it('should group multiple "tags" together', function () {
+    function grouper (acc, value, key, obj, setter) {
+      var tags = value.tags;
+      if (typeof tags === 'undefined') return;
+      tags = Array.isArray(tags) ? tags : [tags];
+      tags.forEach(function (tag) {
+        setter(acc, tag, value, key, obj);
+      });
+    }
+
+    var obj = {
+      a: {tags: ['one'], content: 'A'},
+      b: {tags: ['one', 'two'], content: 'B'},
+      c: {tags: ['two'], content: 'C'},
+      d: {tags: ['two', 'three'], content: 'D'},
+      e: {tags: ['three'], content: 'E'},
+      f: {tags: ['three', 'four'], content: 'F'},
+      g: {content: 'G'}
+    };
+
+    var groups = groupBy(obj, grouper);
+    var expected =  {
+      one: {
+        a: {tags: ['one'], content: 'A'},
+        b: {tags: ['one', 'two'], content: 'B'}
+      },
+      two: {
+        b: {tags: ['one', 'two'], content: 'B'},
+        c: {tags: ['two'], content: 'C'},
+        d: {tags: ['two', 'three'], content: 'D'}
+      },
+      three: {
+        d: {tags: ['two', 'three'], content: 'D'},
+        e: {tags: ['three'], content: 'E'},
+        f: {tags: ['three', 'four'], content: 'F'}
+      },
+      four: {
+        f: {tags: ['three', 'four'], content: 'F'}
+      }
     };
     assert.deepEqual(groups, expected);
   });
