@@ -26,5 +26,17 @@
   "dependencies": {
     "for-in": "^0.1.4",
     "upsert-value": "^0.1.0"
+  },
+  "verb": {
+    "related": {
+      "list": [
+        "group-array",
+        "sort-object",
+        "get-value",
+        "set-value",
+        "upsert-value",
+        "for-in"
+      ]
+    }
   }
 }
